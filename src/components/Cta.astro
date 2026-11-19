@@ -1,0 +1,12 @@
+---
+interface Props {
+	email?: string;
+}
+const { email } = Astro.props;
+---
+
+<div class="cta">
+	<p class="eyebrow">¿Tienes una idea en mente?</p>
+	<h3>Convirtámosla en realidad</h3>
+	{email && <a class="btn" href={`mailto:${email}`}>Hablemos</a>}
+</div>

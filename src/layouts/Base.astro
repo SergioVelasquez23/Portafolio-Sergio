@@ -18,14 +18,16 @@ const {
 	image,
 	ogType = "website",
 	schema = [],
-	name = "Portfolio",
+	name = "Portafolio",
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const home = url();
+const path = Astro.url.pathname.replace(/\/$/, "");
+const onProjects = path.endsWith("/projects") || path.includes("/projects/");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,32 +40,35 @@ const home = url();
 		{description && <meta property="og:description" content={description} />}
 		{image && <meta property="og:image" content={image} />}
 		<meta name="twitter:card" content={image ? "summary_large_image" : "summary"} />
+		<link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
+		<script is:inline>
+			try {
+				var t = localStorage.getItem("theme");
+				if (t) document.documentElement.dataset.theme = t;
+			} catch (e) {}
+		</script>
 		{
 			schema.map((block) => (
-				<script
-					type="application/ld+json"
-					set:html={JSON.stringify(block)}
-					is:inline
-				/>
+				<script type="application/ld+json" set:html={JSON.stringify(block)} is:inline />
 			))
 		}
 	</head>
 	<body>
-		<div class="banner">
-			Example project built with <a
-				href="https://draftbase.co"
-				target="_blank"
-				rel="noopener">Draftbase CMS</a
-			> — a starter you can customize.
-		</div>
-
 		<header class="site">
-			<div>
-				<a class="brand" href={home}>{name}</a>
+			<div class="bar">
+				<a class="brand" href={home}>
+					<svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+						<rect x="6" y="6" width="24" height="24" rx="3" transform="rotate(45 18 18)" fill="var(--logo-bg)" />
+						<rect x="14" y="14" width="8" height="8" rx="1" transform="rotate(45 18 18)" fill="var(--accent)" />
+					</svg>
+					<span>{name}</span>
+				</a>
 				<nav>
-					<a href={`${home}#work`}>Work</a>
-					<a href={`${home}#about`}>About</a>
-					<a href={`${home}#contact`}>Contact</a>
+					<a href={home} class={!onProjects ? "active" : ""}>Inicio</a>
+					<a href={url("projects")} class={onProjects ? "active" : ""}>Proyectos</a>
+					<button id="theme" class="icon-btn" type="button" aria-label="Cambiar tema">
+						<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></svg>
+					</button>
 				</nav>
 			</div>
 		</header>
@@ -71,14 +76,19 @@ const home = url();
 		<main><slot /></main>
 
 		<footer class="site">
-			<p>© {new Date().getFullYear()} {name}.</p>
-			<p>
-				Built as an example with <a
-					href="https://draftbase.co"
-					target="_blank"
-					rel="noopener">Draftbase CMS</a
-				>
-			</p>
+			<p>© {new Date().getFullYear()} {name}</p>
 		</footer>
+
+		<script is:inline>
+			document.getElementById("theme")?.addEventListener("click", function () {
+				var el = document.documentElement;
+				var dark = el.dataset.theme
+					? el.dataset.theme === "dark"
+					: matchMedia("(prefers-color-scheme: dark)").matches;
+				var next = dark ? "light" : "dark";
+				el.dataset.theme = next;
+				try { localStorage.setItem("theme", next); } catch (e) {}
+			});
+		</script>
 	</body>
 </html>

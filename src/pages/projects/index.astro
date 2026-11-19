@@ -1,0 +1,19 @@
+---
+import Base from "../../layouts/Base.astro";
+import ProjectGrid from "../../components/ProjectGrid.astro";
+import { getAll, type Profile, type Project } from "../../lib/draftbase";
+
+const [[profile], projects] = await Promise.all([
+	getAll<Profile>("profile"),
+	getAll<Project>("project"),
+]);
+projects.sort((a, b) => (b.fields.year ?? 0) - (a.fields.year ?? 0));
+const name = profile?.fields.name ?? "Portafolio";
+---
+
+<Base title={`Proyectos — ${name}`} description={`Proyectos de ${name}`} name={name}>
+	<div class="col" style="padding-top:40px">
+		<h1 style="font-size:32px;margin-bottom:20px">Proyectos</h1>
+		<ProjectGrid projects={projects} />
+	</div>
+</Base>

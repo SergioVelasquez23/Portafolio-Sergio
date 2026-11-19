@@ -1,0 +1,40 @@
+---
+import { mediaSrc, url, type Project } from "../lib/draftbase";
+import type { Entry } from "@draftbase/sdk";
+
+interface Props {
+	projects: Entry<Project>[];
+}
+const { projects } = Astro.props;
+const gradients = [
+	"linear-gradient(135deg,#6d28d9,#a78bfa)",
+	"linear-gradient(135deg,#4338ca,#8b5cf6)",
+	"linear-gradient(135deg,#7e22ce,#d946ef)",
+	"linear-gradient(135deg,#312e81,#7c3aed)",
+];
+---
+
+<ul class="grid">
+	{
+		projects.map((p, i) => {
+			const [brand, subtitle] = p.fields.title.split(" — ");
+			const cover = mediaSrc(p.fields.cover);
+			return (
+				<li class="card">
+					<a href={url(`projects/${p.fields.slug}`)}>
+						<div class="thumb-box" style={cover ? "" : `background:${gradients[i % gradients.length]}`}>
+							{cover && (
+								<img class="thumb" src={cover} alt={p.fields.cover?.altText ?? p.fields.title} loading="lazy" />
+							)}
+							<div class="thumb-title">
+								<span class="brand-name">{brand}</span>
+								{subtitle && <span class="sub">{subtitle}</span>}
+							</div>
+						</div>
+						<p class="tags">{p.fields.tech}</p>
+					</a>
+				</li>
+			);
+		})
+	}
+</ul>

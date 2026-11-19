@@ -1,26 +1,37 @@
 import { createClient, type Entry } from "@draftbase/sdk";
 
-const apiKey = import.meta.env.DRAFTBASE_API_KEY;
-if (!apiKey) {
-	throw new Error(
-		"DRAFTBASE_API_KEY is not set. Copy .env.example to .env and add a delivery-scoped key.",
-	);
-}
+import * as local from "../data/portfolio.mjs";
 
-// Runs only in Node, at build time. Astro exposes non-PUBLIC_ env vars to server code only,
-// so the key is never inlined into anything the browser downloads.
-const client = createClient({
-	apiKey,
-	baseUrl: import.meta.env.DRAFTBASE_API_URL ?? "https://api.draftbase.co",
-	environment: import.meta.env.DRAFTBASE_ENVIRONMENT ?? "production",
-	cacheTtlMs: 60_000,
-});
+const apiKey = import.meta.env.DRAFTBASE_API_KEY;
+
+// Con API key el contenido sale de Draftbase (en build). Sin ella, el sitio usa
+// src/data/portfolio.mjs, así que `npm run dev` y `npm run build` funcionan sin CMS.
+const client = apiKey
+	? createClient({
+			apiKey,
+			baseUrl: import.meta.env.DRAFTBASE_API_URL ?? "https://api.draftbase.co",
+			environment: import.meta.env.DRAFTBASE_ENVIRONMENT ?? "production",
+			cacheTtlMs: 60_000,
+		})
+	: null;
+
+const localContent: Record<string, unknown[]> = {
+	profile: [local.profile],
+	project: local.projects,
+	experience: local.experience,
+	education: local.education,
+	skill: local.skills,
+	faq: local.faqs,
+};
 
 /**
  * All published entries of one template, following cursor pagination to the end.
  * `templateId` is the template's key (e.g. "project"), not a database id.
  */
 export async function getAll<Fields>(templateId: string): Promise<Entry<Fields>[]> {
+	if (!client) {
+		return (localContent[templateId] ?? []).map((fields) => ({ fields }) as Entry<Fields>);
+	}
 	const all: Entry<Fields>[] = [];
 	let after: string | undefined;
 	do {
@@ -37,6 +48,13 @@ export function imageUrl(field: unknown): string | null {
 	return (field as { url?: string | null } | null)?.url ?? null;
 }
 
+/** Imagen de un campo media: URL absoluta del CMS, o archivo de public/ (portada local). */
+export function mediaSrc(field: unknown): string | null {
+	const u = imageUrl(field);
+	if (!u) return null;
+	return /^(https?:)?\/\//.test(u) ? u : url(u);
+}
+
 /** Prefixes a path with the configured `base`, so links work on a GitHub Pages project site. */
 export function url(path = ""): string {
 	return import.meta.env.BASE_URL.replace(/\/$/, "") + "/" + path.replace(/^\//, "");
@@ -51,6 +69,7 @@ export interface Project {
 	liveUrl?: string;
 	year?: number;
 	featured?: boolean;
+	tech?: string;
 }
 
 export interface Faq {
@@ -67,4 +86,31 @@ export interface Profile {
 	email?: string;
 	githubUrl?: string;
 	linkedinUrl?: string;
+	phone?: string;
+	location?: string;
+}
+
+export interface Experience {
+	role: string;
+	company: string;
+	location?: string;
+	period?: string;
+	description?: string;
+	tags?: string;
+	order?: number;
+}
+
+export interface Education {
+	degree: string;
+	institution?: string;
+	period?: string;
+	description?: string;
+	tags?: string;
+	order?: number;
+}
+
+export interface Skill {
+	category: string;
+	items: string;
+	order?: number;
 }

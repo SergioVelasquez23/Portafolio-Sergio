@@ -6,7 +6,7 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
 	// SITE_URL/BASE_PATH let a fork deploy to its own GitHub Pages URL without editing
 	// this file — `npm create draftbase` sets them as repo variables.
-	site: process.env.SITE_URL || "https://demo-portfolio.draftbase.co",
-	base: process.env.BASE_PATH || "/",
+	site: process.env.SITE_URL || "https://sergiovelasquez23.github.io",
+	base: process.env.BASE_PATH || "/Portafolio-Sergio",
 	integrations: [sitemap()],
 });

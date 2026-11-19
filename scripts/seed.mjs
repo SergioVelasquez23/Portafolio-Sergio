@@ -10,10 +10,11 @@
  * Safe to re-run: existing templates are left alone and entries are matched by title.
  */
 import { readFileSync } from "node:fs";
+import { profile, projects, experience, education, skills, faqs } from "../src/data/portfolio.mjs";
 const BASE_URL = process.env.DRAFTBASE_API_URL || "https://api.draftbase.co";
 const API_KEY = process.env.DRAFTBASE_MANAGEMENT_API_KEY;
 const ENV_ID = process.env.DRAFTBASE_ENVIRONMENT || "production";
-const LOCALE = "en-US";
+const LOCALE = "es-CO";
 
 if (!API_KEY) {
 	console.error("Set DRAFTBASE_MANAGEMENT_API_KEY in .env (see .env.example).");
@@ -112,117 +113,18 @@ const templates = JSON.parse(
 	readFileSync(new URL("../draftbase.templates.json", import.meta.url), "utf8"),
 );
 
-const faqs = [
-	{
-		question: "Are you available for freelance work?",
-		answer: "Yes. I take on a small number of freelance projects each quarter, usually four to eight weeks each.",
-		order: 1,
-	},
-	{
-		question: "What's your typical process?",
-		answer: "Discovery, then a rough working version, then the polished one — with a review at each step so nothing is a surprise at handoff.",
-		order: 2,
-	},
-	{
-		question: "Do you work with startups?",
-		answer: "Most of my clients are early to growth-stage startups shipping their first or second product.",
-		order: 3,
-	},
-	{
-		question: "How can I get in touch?",
-		answer: "Email is the fastest way to reach me — the address is in the contact section of the home page.",
-		order: 4,
-	},
-];
-
-const projects = [
-	{
-		title: "Northwind Analytics",
-		slug: "northwind-analytics",
-		summary: "A reporting dashboard that turned a 40-tab spreadsheet into three screens.",
-		year: 2025,
-		featured: true,
-		liveUrl: "https://example.com/northwind",
-		image: "https://picsum.photos/seed/northwind/1200/675",
-		body: `## The problem
-
-Operations ran on a shared spreadsheet that took eleven minutes to open. Nobody trusted
-the numbers, so everyone kept a private copy.
-
-## What I built
-
-A read-only dashboard backed by the warehouse, with three views: today, this week, and
-anything that looks wrong. Everything else was cut.
-
-## Result
-
-Reporting time dropped from two days a month to zero. The spreadsheet was deleted.`,
-	},
-	{
-		title: "Ledger CLI",
-		slug: "ledger-cli",
-		summary: "A single-binary command-line tool for reconciling invoices against bank exports.",
-		year: 2024,
-		featured: true,
-		image: "https://picsum.photos/seed/ledger/1200/675",
-		body: `## Why a CLI
-
-The people doing reconciliation already lived in a terminal. A web app would have been a
-detour through a browser for a job that is really just diffing two files.
-
-## Design notes
-
-One command, two arguments, and an exit code that means something in CI.`,
-	},
-	{
-		title: "Field Notes",
-		slug: "field-notes",
-		summary: "An offline-first note app for site inspectors working without signal.",
-		year: 2023,
-		image: "https://picsum.photos/seed/fieldnotes/1200/675",
-		body: `## Constraints
-
-Inspectors work in basements and rural sites. The app had to assume no network for hours
-at a time, then sync without conflicts when a signal came back.
-
-## Approach
-
-Local-first storage with a last-writer-wins merge, plus a visible sync status so nobody
-has to guess whether their morning's work made it home.`,
-	},
-];
-
 async function main() {
 	for (const template of templates) await ensureTemplate(template);
 	// The CLI (`npm create draftbase`) seeds schema only, so a new project starts empty.
 	if (process.env.SEED_TEMPLATES_ONLY) return;
 
-	const avatar = await uploadImage(
-		"https://picsum.photos/seed/avatar/400/400",
-		"avatar.jpg",
-		"Portrait of Alex Rivera",
-	);
-	await ensureEntry("profile", "name", {
-		name: "Alex Rivera",
-		headline: "Product engineer — I build the boring version first.",
-		avatar,
-		email: "hello@example.com",
-		githubUrl: "https://github.com/",
-		bio: `I design and ship small, durable software. Most of my work is deleting things that
-turned out not to be load-bearing.
-
-Currently freelancing. Available for short engagements.`,
-	});
-
-	for (const { image, ...project } of projects) {
-		const cover = await uploadImage(
-			image,
-			`${project.slug}.jpg`,
-			`Cover image for ${project.title}`,
-		);
-		await ensureEntry("project", "title", { ...project, cover });
-	}
-
+	// El avatar no se sube aquí: agrégalo desde el panel de Draftbase (campo "Avatar").
+	await ensureEntry("profile", "name", profile);
+	// `cover` apunta a public/ (solo para el modo local); en el CMS súbela como media.
+	for (const { cover, ...project } of projects) await ensureEntry("project", "title", project);
+	for (const item of experience) await ensureEntry("experience", "role", item);
+	for (const item of education) await ensureEntry("education", "degree", item);
+	for (const item of skills) await ensureEntry("skill", "category", item);
 	for (const faq of faqs) await ensureEntry("faq", "question", faq);
 
 	console.log("\nSeed complete. Run `npm run dev`.");

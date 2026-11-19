@@ -40,6 +40,16 @@
 				"key": "linkedinUrl",
 				"label": "LinkedIn URL",
 				"type": "text"
+			},
+			{
+				"key": "phone",
+				"label": "Teléfono",
+				"type": "text"
+			},
+			{
+				"key": "location",
+				"label": "Ubicación",
+				"type": "text"
 			}
 		]
 	},
@@ -92,6 +102,11 @@
 				"key": "featured",
 				"label": "Featured",
 				"type": "boolean"
+			},
+			{
+				"key": "tech",
+				"label": "Tecnologías",
+				"type": "text"
 			}
 		]
 	},
@@ -116,6 +131,116 @@
 			{
 				"key": "order",
 				"label": "Order",
+				"type": "number"
+			}
+		]
+	},
+	{
+		"key": "experience",
+		"name": "Experience",
+		"titleField": "role",
+		"fields": [
+			{
+				"key": "role",
+				"label": "Cargo",
+				"type": "text",
+				"required": true
+			},
+			{
+				"key": "company",
+				"label": "Empresa",
+				"type": "text",
+				"required": true
+			},
+			{
+				"key": "location",
+				"label": "Ubicación",
+				"type": "text"
+			},
+			{
+				"key": "period",
+				"label": "Periodo",
+				"type": "text"
+			},
+			{
+				"key": "description",
+				"label": "Descripción",
+				"type": "richText"
+			},
+			{
+				"key": "tags",
+				"label": "Etiquetas",
+				"type": "text",
+				"multiline": true
+			},
+			{
+				"key": "order",
+				"label": "Orden",
+				"type": "number"
+			}
+		]
+	},
+	{
+		"key": "education",
+		"name": "Education",
+		"titleField": "degree",
+		"fields": [
+			{
+				"key": "degree",
+				"label": "Título",
+				"type": "text",
+				"required": true
+			},
+			{
+				"key": "institution",
+				"label": "Institución",
+				"type": "text"
+			},
+			{
+				"key": "period",
+				"label": "Periodo",
+				"type": "text"
+			},
+			{
+				"key": "description",
+				"label": "Descripción",
+				"type": "text",
+				"multiline": true
+			},
+			{
+				"key": "tags",
+				"label": "Etiquetas",
+				"type": "text",
+				"multiline": true
+			},
+			{
+				"key": "order",
+				"label": "Orden",
+				"type": "number"
+			}
+		]
+	},
+	{
+		"key": "skill",
+		"name": "Skill",
+		"titleField": "category",
+		"fields": [
+			{
+				"key": "category",
+				"label": "Categoría",
+				"type": "text",
+				"required": true
+			},
+			{
+				"key": "items",
+				"label": "Tecnologías",
+				"type": "text",
+				"required": true,
+				"multiline": true
+			},
+			{
+				"key": "order",
+				"label": "Orden",
 				"type": "number"
 			}
 		]

@@ -1,7 +1,8 @@
 ---
 import { toHtml } from "@draftbase/renderer";
+import Cta from "../../components/Cta.astro";
 import Base from "../../layouts/Base.astro";
-import { getAll, url, type Profile, type Project } from "../../lib/draftbase";
+import { getAll, mediaSrc, url, type Profile, type Project } from "../../lib/draftbase";
 
 export async function getStaticPaths() {
 	const [projects, [profile]] = await Promise.all([
@@ -26,7 +27,7 @@ const schema = [
 		name: project.fields.title,
 		description: project.fields.summary,
 		url: canonical,
-		image: project.fields.cover?.url ?? undefined,
+		image: mediaSrc(project.fields.cover) ?? undefined,
 		dateCreated: project.fields.year ? String(project.fields.year) : undefined,
 		author: { "@type": "Person", name },
 	},
@@ -49,14 +50,14 @@ const schema = [
 <Base
 	title={project.fields.title}
 	description={project.fields.summary}
-	image={project.fields.cover?.url}
+	image={mediaSrc(project.fields.cover)}
 	ogType="article"
 	name={name}
 	schema={schema}
 >
 	<article class="article">
-		<a class="muted" href={`${url()}#work`} style="font-size:var(--text-sm)">← All work</a>
-		<h1 style="font-size:var(--text-4xl);margin:12px 0 8px">{project.fields.title}</h1>
+		<a class="muted" href={url("projects")} style="font-size:13px">← Todos los proyectos</a>
+		<h1>{project.fields.title}</h1>
 		<p class="muted">
 			{project.fields.year}
 			{
@@ -64,21 +65,29 @@ const schema = [
 					<>
 						{" · "}
 						<a href={project.fields.liveUrl} rel="noopener noreferrer">
-							Visit site
+							Ver sitio
 						</a>
 					</>
 				)
 			}
 		</p>
 		{
-			project.fields.cover?.url && (
+			project.fields.tech && (
+				<ul class="chips">
+					{project.fields.tech.split(",").map((t) => <li>{t.trim()}</li>)}
+				</ul>
+			)
+		}
+		{
+			mediaSrc(project.fields.cover) && (
 				<img
-					src={project.fields.cover.url}
+					src={mediaSrc(project.fields.cover)!}
 					alt={project.fields.cover.altText ?? project.fields.title}
 					style="margin:24px 0"
 				/>
 			)
 		}
 		<div class="db-content" set:html={body} />
+		<Cta email={profile?.fields.email} />
 	</article>
 </Base>
