@@ -61,7 +61,7 @@ const onProjects = path.endsWith("/projects") || path.includes("/projects/");
 						<rect x="6" y="6" width="24" height="24" rx="3" transform="rotate(45 18 18)" fill="var(--logo-bg)" />
 						<rect x="14" y="14" width="8" height="8" rx="1" transform="rotate(45 18 18)" fill="var(--accent)" />
 					</svg>
-					<span>{name}</span>
+					<span>{name.split(" ")[0]}<span class="dot">.</span>dev</span>
 				</a>
 				<nav>
 					<a href={home} class={!onProjects ? "active" : ""}>Inicio</a>

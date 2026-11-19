@@ -26,7 +26,7 @@ Aplico principios SOLID, DRY y KISS, arquitectura por capas y Clean Architecture
 
 ## En lo que estoy ahora
 
-Desde enero de 2026 trabajo como desarrollador freelance para Vercy Motos, donde construí un ERP completo con facturación electrónica DIAN y más de 50 pantallas en Flutter Web. En paralelo desarrollo proyectos como Kronnos Restobar, SANE y enBus.
+Desde Febero de 2025 trabajo como desarrollador freelance para Vercy Motos, donde construí un ERP completo con facturación electrónica DIAN y más de 50 pantallas en Flutter Web. En paralelo desarrollo proyectos como Kronnos Restobar, SANE y enBus.
 
 ## Más sobre mí
 
